@@ -209,7 +209,7 @@ framebuffer and sampling whether the pixels were inside the triangle. In order t
 	<p>
 		Level zero sampling had the same speed as pixel sampling. 
 		For sampling at the nearest level and bilinear level interpolation, we had to get the uv barycentric coordinates, and calculate and round the continuous mipmap level with the Jacobian. 
-		In addition, for bilinear level interpolation, depending on whether we sampled bilinearly or sampled nearest, we sampled both at the nearest mipmap level D and D+1, then performed interpolation with distance that depended on how far they were from the continuous D value. 
+		In addition, for bilinear level interpolation, depending on whether we sampled bilinearly or sampled nearest, we sampled both at the nearest mipmap level D and D+1, then performed interpolation with distance that depended on how far they were from the continuous D value. As we increase the mipmap level, the pixel-by-pixel size decreases. 
 	</p>
 
 	<p>
