@@ -32,12 +32,9 @@
 <div>
 
 <h2 align="middle">Overview</h2>
-<p>In this project, we performed rasterization as 2D sampling by drawing a triangle to the
-framebuffer and sampling whether the pixels were inside the triangle. In order to do this,
-  we iterated over the grid cells within the bounding box of the triangle, and used the three-line test  to check if the center pixel was inside the triangle. Also,we applied antialiasing by supersampling to have higher image qualities,used barycentric coordinates for interpolation across triangles,level sampling,
-  and used texture filtering methods such as bilinear and trilinear filtering. Overall, we learned about techniques to improving sampling efficiency,matrix transforms,
-  antialiasing, and different sampling methods. Some interesting things I've learned is how color values averaged in a pixel area after taking the samples in a pixel during supersampling
-  could reduce jaggies and improve images such as the sharp vertices of triangles. We also found it interesting how we could use other more efficient methods of antialiasing such as texture antialiasing.
+<p>In our second project, Mesh Edit, we utilized Casteljau's algorithm to create Bezier curves and surfaces for geometric objects, implemented the area-weighted vertex normals at vertices for smooth shading, performed edge flip and edge split to manipulate mesh elements, and performed loop subdivision to simulate a high-resolution display in 3D. 
+	Our final product allows for us to render high-resolution triangle meshes onto a geometric object along with performing smooth, object shading. 
+	Overall, we found it interesting how realistic the geometric object becomes with smooth shading and loop subdivision and how flipping and splitting edges enabled for softer surfaces.
 </p>
 <h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
 
@@ -159,41 +156,48 @@ framebuffer and sampling whether the pixels were inside the triangle. In order t
     </table>
   </div>
 
-<h3 align="middle">Part 3: Transforms</h3>
-  <img src="images/cubeman.png" align="middle" width="400px"/>
-  <p>Cubeman is waving hello to his CS184 instructor, staff, and peers! We've modified his proportions to appear petite.
-    Cubeman's midstance gait indicates that he is about to walk over to office hours.</p>
+<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
+  <p>To implement area-weighted vertex normals, we first started at the half-edge that was associated with the given vertex. 
+	  From that half-edge, we called next() to get the rest of the vertex positions associated with that triangle face. 
+	  Using the vertex positions of the triangle, we found the normal using the cross product[how], and also the area [how]of the triangle to get the weighted normal,and added it to the Vector3D result. 
+	  Geometrically, the normal for a triangle face is the vector perpendicular to a surface at a given point. In order to get the weighted normals for all the triangle faces associated with the given vertex, we used iteration and called on the half-edges twin which had the given vertex associated with it. We normalized the final Vector3D result to get the resulting area-weighted normal vector.
+  </p>
 
-<h2 align="middle">Section II: Sampling</h2>
-
-<h3 align="middle">Part 4: Barycentric coordinates</h3>
+<h3 align="middle">Part 4: Edge Flip</h3>
   <p>
-    We used barycentric coordinates to interpolate across triangles for purposes such as finding texture
-    coordinates and obtaining smooth pixel values. In the color triangle, we used barycentric coordinates to linearly interpolate the red, green, and blue
-    vertices on the triangle. Since barycentric coordinates are related to the proportional distances from the vertices, taking a linearly
-    combination of the color values with the barycentric coordinates helped to determine a weighted sum of the color value at the pixel point.
-    The closer a point was to a particular vertex,
-    the more heavily weighed the color value was.
+    To implement edge flip operation, we first drew and labeled the edge flip diagram with two triangles to illustrate how the triangles would look before the edge flip operation. 
+	Then, we drew the diagram of how the two triangles would look after the edge flip. 
+	To implement flipEdge, we first updated the pointers of each halfedge to match the finished edge flip diagram. 
+	Similarly, we then updated the pointers for each edge, vertex, and face. 
+	Next, we set the neighbors of each half edge to by indicating the half edge's next, twin, vertex, edge, and face. 
+	Finally, we returned the EdgeIterator, e0.
   </p>
   <div align="middle">
     <table style="width=100%">
       <tr>
         <td>
-          <img src="images/tsk4.png" align="middle" width="400px"/>
-          <figcaption align="middle">Color Wheel</figcaption>
+          <img src="images/tsk4-1.png" align="middle" width="400px"/>
+          <figcaption align="middle">Before Edge Flip</figcaption>
         </td>
         <td>
-          <img src="images/tsk4-1.png" align="middle" width="400px"/>
-          <figcaption align="middle">Linear Interpolation Across Triangle</figcaption>
+          <img src="images/tsk4-2.png" align="middle" width="400px"/>
+          <figcaption align="middle">After One Edge Flip</figcaption>
         </td>
+		<tr>	
+		</tr>
     </table>
+	<img src="images/tsk4-3.png" align="middle" width="800px"/>
+	<figcaption align="middle">Multiple Edge Flips</figcaption>
   </div>
 
 
-<h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
-  <p>Pixel sampling is the "simplest" way of mapping a texture onto an image. It is a 1:1 mapping where each pixel from the original image takes on a single pixel from the texture. To implement pixel sampling to perform texture mapping, we perform nearest sampling, we scale the provided uv coordinates to the texture width and height. Then, we round these coordinates to determine the texel color closest to the pixel center. After rounding, we can now sample the color at this location to get our texel color.
-    In contrast to nearest sampling, bilinear sampling performs color interpolation between coordinates closest to the corresponding texel. This color interpolation allows for us to get a smoother texture notice.
-    To implement bilinear sampling, we first calculated the four nearest texture sample locations to our desired sample texture value. Then, we calculated the fractional offsets to and from each of the four coordinates. After, we perform a series of linear interpolations to get our desired sample texel color.
+<h3 align="middle">Part 5: Edge Split</h3>
+  <p>To implement the edge split operation, we first enumerated the old mesh's half edge elements. 
+	  Then, we created new half edges, edges, and faces to account for after the edge split. 
+	  We then listed out the  re-used edges and vertices to create a new vertex iterator. 
+	  After, we set the position of our new vertex and updated the pointers for our two faces, updated our vertex half edges, updated our face half edges, and updated our edge half edges. 
+	  Lastly, we set the neighbors of each halfedge and returned the newly created vertex iterator.
   </p>
 
   <div align="middle">
@@ -229,7 +233,7 @@ framebuffer and sampling whether the pixels were inside the triangle. In order t
 
 
 
-<h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+<h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
   <h1>Level Sampling</h1>
   <p>
     Level sampling is where we perform a computation to determine the resolution, or mipmap level, for a particular pixel. Each pixel will be mapped to a texel with varying resolutions. To determine what texture resolution should be mapped to each pixel, we computed the texture gradient derivatives to indicate whether there is a large change in frequency. If so, we would need to provide a higher mipmap level so that we can render a lower resolution texture. If the gradients are low, we can choose a lower mipmap level (higher-resolution texture) accordingly. To implement level sampling, we first computed the uv barycentric coordinates of (x, y), (x+1, y), and (x, y+1).
