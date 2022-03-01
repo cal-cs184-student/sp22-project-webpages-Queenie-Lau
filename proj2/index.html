@@ -1,7 +1,301 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Mesh Edit</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2022</h1>
+<h1 align="middle">Project 2: Mesh Edit</h1>
+<h2 align="middle">Queenie Lau, Lisa Cheung</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>In this project, we performed rasterization as 2D sampling by drawing a triangle to the
+framebuffer and sampling whether the pixels were inside the triangle. In order to do this,
+  we iterated over the grid cells within the bounding box of the triangle, and used the three-line test  to check if the center pixel was inside the triangle. Also,we applied antialiasing by supersampling to have higher image qualities,used barycentric coordinates for interpolation across triangles,level sampling,
+  and used texture filtering methods such as bilinear and trilinear filtering. Overall, we learned about techniques to improving sampling efficiency,matrix transforms,
+  antialiasing, and different sampling methods. Some interesting things I've learned is how color values averaged in a pixel area after taking the samples in a pixel during supersampling
+  could reduce jaggies and improve images such as the sharp vertices of triangles. We also found it interesting how we could use other more efficient methods of antialiasing such as texture antialiasing.
+</p>
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision </h3>
+
+
+  <p>De  Casteljau's algorithm is a recursive algorithm that allows for us to construct 
+	  bezier curves from repeated linear interpolation. 
+	  We implemented De Casteljau's algorithm by first instantiating a Vector2D for our 
+	  intermediate control points. Then, for each original control point in the list of vectors, 
+	  we saved that vector point and the next vector point in the list. 
+	  We also checked our vector index to ensure that we did not reach the end of the list. 
+	  Then, we performed linear interpolation on these two vectors and added the result to our intermediate control points.
+  </p>
+
+  <p>
+     Screenshots of each step / level of the evaluation from the six original control points down to the final evaluated point shown below.
+  </p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+	  <td>
+		<img src="images/tsk1-0.png" align="middle" width="400px"/>
+		<figcaption align="middle">Step 0.</figcaption>
+	  </td>
+      <td>
+        <img src="images/tsk1-1.png" align="middle" width="400px"/>
+        <figcaption align="middle">Step 1.</figcaption>
+      </td>
+    </tr>
+	<tr>
+	<td>
+		<img src="images/tsk1-2.png" align="middle" width="400px"/>
+		<figcaption align="middle">Step 2.</figcaption>
+		</td>
+		<td>
+			<img src="images/tsk1-3.png" align="middle" width="400px"/>
+			<figcaption align="middle">Step 3.</figcaption>
+		  </td>
+	</tr>
+    <br>
+
+    <tr>
+      <td>
+        <img src="images/tsk1-4.png" align="middle" width="400px"/>
+        <figcaption align="middle">Step 4.</figcaption>
+      </td>
+      <td>
+        <img src="images/tsk1-5.png" align="middle" width="400px"/>
+        <figcaption align="middle">Step 5.</figcaption>
+      </td>
+    </tr>
+
+	<br>
+
+    <tr>
+      <td>
+        <img src="images/tsk1-5.png" align="middle" width="400px"/>
+        <figcaption align="middle">Step 5.</figcaption>
+      </td>
+      <td>
+        <img src="images/tsk1-6.png" align="middle" width="400px"/>
+        <figcaption align="middle">Final Evaluated Point and Final Bezier Curve.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>
+	Screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter 't' shown below.
+</p>
+
+<div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="images/tsk1-7.png" align="middle" width="400px"/>
+          <figcaption align="middle"></figcaption>
+        </td>
+        <td>
+          <img src="images/tsk1-8.png" align="middle" width="400px"/>
+          <figcaption align="middle"></figcaption>
+        </td>
+      </tr>
+      <br>
+      <tr>
+        <td>
+          <img src="images/tsk1-9.png"" align="middle" width="400px"/>
+          <figcaption align="middle"></figcaption>
+        </td>
+		<td>
+			<img src="images/tsk1-10.png"" align="middle" width="400px"/>
+			<figcaption align="middle"></figcaption>
+		  </td>
+      </tr>
+    </table>
+  </div>
+
+<h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
+
+  <p>In order to utilize the de Casteljau algorithm to extend to Bezier surfaces, 
+	  we first created a temporary array of Vector3D elements and initialized it to have 
+	  the same size as controlPoints.size(). 
+	  Then, we looped through each control point and fully evaluated de Casteljau's algorithm 
+	  at that point with scalar parameter u.
+	  Now, we stored the fully evaluated point back into our temporary array of Vector3D elements. 
+	  Finally, we evaluated the set of our temporary Vector3D points at scalar parameter v to evaluate Bezier surfaces along the y-axis. 
+  </p>
+
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="images/tsk2-1.png" align="center" width="600px"/>
+          <figcaption align="middle">Evaluated bezier teapot surface</figcaption>
+		</td>
+      </tr>
+    </table>
+  </div>
+
+<h3 align="middle">Part 3: Transforms</h3>
+  <img src="images/cubeman.png" align="middle" width="400px"/>
+  <p>Cubeman is waving hello to his CS184 instructor, staff, and peers! We've modified his proportions to appear petite.
+    Cubeman's midstance gait indicates that he is about to walk over to office hours.</p>
+
+<h2 align="middle">Section II: Sampling</h2>
+
+<h3 align="middle">Part 4: Barycentric coordinates</h3>
+  <p>
+    We used barycentric coordinates to interpolate across triangles for purposes such as finding texture
+    coordinates and obtaining smooth pixel values. In the color triangle, we used barycentric coordinates to linearly interpolate the red, green, and blue
+    vertices on the triangle. Since barycentric coordinates are related to the proportional distances from the vertices, taking a linearly
+    combination of the color values with the barycentric coordinates helped to determine a weighted sum of the color value at the pixel point.
+    The closer a point was to a particular vertex,
+    the more heavily weighed the color value was.
+  </p>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="images/tsk4.png" align="middle" width="400px"/>
+          <figcaption align="middle">Color Wheel</figcaption>
+        </td>
+        <td>
+          <img src="images/tsk4-1.png" align="middle" width="400px"/>
+          <figcaption align="middle">Linear Interpolation Across Triangle</figcaption>
+        </td>
+    </table>
+  </div>
+
+
+<h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
+  <p>Pixel sampling is the "simplest" way of mapping a texture onto an image. It is a 1:1 mapping where each pixel from the original image takes on a single pixel from the texture. To implement pixel sampling to perform texture mapping, we perform nearest sampling, we scale the provided uv coordinates to the texture width and height. Then, we round these coordinates to determine the texel color closest to the pixel center. After rounding, we can now sample the color at this location to get our texel color.
+    In contrast to nearest sampling, bilinear sampling performs color interpolation between coordinates closest to the corresponding texel. This color interpolation allows for us to get a smoother texture notice.
+    To implement bilinear sampling, we first calculated the four nearest texture sample locations to our desired sample texture value. Then, we calculated the fractional offsets to and from each of the four coordinates. After, we perform a series of linear interpolations to get our desired sample texel color.
+  </p>
+
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="images/tsk5-1.png" align="middle" width="400px"/>
+          <figcaption align="middle">Level Zero, Nearest Pixel, Sample Rate = 1 per pixel</figcaption>
+        </td>
+        <td>
+          <img src="images/tsk5-2.png" align="middle" width="400px"/>
+          <figcaption align="middle">Level Zero, Nearest Pixel, Sample Rate = 16 per pixel</figcaption>
+        </td>
+
+      </tr>
+
+      <tr>
+        <td>
+          <img src="images/tsk5-4.png" align="middle" width="400px"/>
+          <figcaption align="middle">Level Zero, Bilinear Pixel, Sample Rate = 1 per pixel</figcaption>
+        </td>
+        <td>
+          <img src="images/tsk5-3.png" align="middle" width="400px"/>
+          <figcaption align="middle">Level Zero, Bilinear Pixel, Sample Rate = 16 per pixel</figcaption>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <p>
+	Screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter 't' shown below.
+  </p>
+
+
+
+<h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+  <h1>Level Sampling</h1>
+  <p>
+    Level sampling is where we perform a computation to determine the resolution, or mipmap level, for a particular pixel. Each pixel will be mapped to a texel with varying resolutions. To determine what texture resolution should be mapped to each pixel, we computed the texture gradient derivatives to indicate whether there is a large change in frequency. If so, we would need to provide a higher mipmap level so that we can render a lower resolution texture. If the gradients are low, we can choose a lower mipmap level (higher-resolution texture) accordingly. To implement level sampling, we first computed the uv barycentric coordinates of (x, y), (x+1, y), and (x, y+1).
+    In the function, rasterize_textured_triangle, we set the sample parameters and set the sampled texture color to our texture buffer. 
+	In our sample function for texture, we calculated the difference between the vectors to get the correct mipmap level and scaled the difference vectors accordingly. 
+	We also took into account the varying combinations we could have in regards to our level sample method and pixel sample method. 
+	<br><br>As seen in the images below, performing bilinear pixel interpolation while using level zero and nearest level provides a smoother overall texture than nearest pixel sampling. The difference is clearest when we use level zero and nearest pixel sampling. In that image, the edges remain relatively jagged and not as smoothly blended.
+	</p>
+
+	<p>
+		Level zero sampling had the same speed as pixel sampling. 
+		For sampling at the nearest level and bilinear level interpolation, we had to get the uv barycentric coordinates, and calculate and round the continuous mipmap level with the Jacobian. 
+		In addition, for bilinear level interpolation, depending on whether we sampled bilinearly or sampled nearest, we sampled both at the nearest mipmap level D and D+1, then performed interpolation with distance that depended on how far they were from the continuous D value. As we increase the mipmap level, the pixel-by-pixel size decreases. 
+	</p>
+
+	<p>
+		Bilinear level interpolation has the greatest performance when it comes to antialiasing because we are determining mipmap levels for a particular pixel. 
+		We are using high-resolution mipmaps for objects that are closer to us and lower-resolution mipmaps for objects that are more distant. 
+		We can simulate perspective for textures using mip maps. 
+		Therefore, we are getting high quality rendered textures.
+	</p>
+	
+	<h1>Pixel Sampling</h1>
+	<p>
+	Nearest pixel sampling was faster than bilinear pixel sampling since sampling nearest only involved scaling the uv texture coordinates with the mipmap and determining the location whereas bilinear filtering involved performing 4 texel reads and 3 linear interpolations. 
+	Both nearest and bilinear filtering used the same amount of memory since there was no dynamic resizing of memory for any of the maps. 
+	Bilinear filtering has better performance when it comes to antialiasing since it samples the 4 nearest locations for the texture values, giving smoother texture values rather than discrete and jagged images. 
+	</p>
+
+	<h1>Supersampling</h1>
+	<p>
+	For supersampling, the speed of our implementation is quite slow because we need to sample numerous points, average these points across every sample, and get the appropriate sample point back. 
+	We are essentially sampling at a higher-resolution  and then sampling back down. 
+	So, rendering at n samples per pixel would require us to render our image n times the resolution. 
+	Therefore, the speed is linear to the samples per pixel. 
+	Supersampling with a higher sample rate results in higher memory usage since we need to dynamically allocate more memory for the NxN subpixels per every pixel. 
+	In comparison, single pixels don’t need extra memory. 
+	Supersampling is quite effective in anti-aliasing. 
+	Though expensive, we see a visible difference when sampling at sample rates 4, and especially 16.
+	</p>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="images/tsk6-1.png" align="middle" width="400px"/>
+          <figcaption align="middle">L_ZERO, P_NEAREST</figcaption>
+        </td>
+        <td>
+          <img src="images/tsk6-2.png" align="middle" width="400px"/>
+          <figcaption align="middle">L_ZERO,P_LINEAR</figcaption>
+        </td>
+      </tr>
+      <br>
+      <tr>
+        <td>
+          <img src="images/tsk6-3.png" align="middle" width="400px"/>
+          <figcaption align="middle">L_NEAREST,P_NEAREST</figcaption>
+        </td>
+        <td>
+          <img src="images/tsk6-4.png" align="middle" width="400px"/>
+          <figcaption align="middle">L_NEAREST,P_LINEAR</figcaption>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+<p>Link: <a href="url">https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj1/index.html</a></p>
+</body>
 </html>
