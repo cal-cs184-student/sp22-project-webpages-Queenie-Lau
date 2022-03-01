@@ -38,9 +38,7 @@
 </p>
 <h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
 
-<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision </h3>
-
-
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
   <p>De  Casteljau's algorithm is a recursive algorithm that allows for us to construct 
 	  bezier curves from repeated linear interpolation. 
 	  We implemented De Casteljau's algorithm by first instantiating a Vector2D for our 
@@ -101,6 +99,7 @@
         <figcaption align="middle">Final Evaluated Point and Final Bezier Curve.</figcaption>
       </td>
     </tr>
+
   </table>
 </div>
 
@@ -205,101 +204,62 @@
       <tr>
         <td>
           <img src="images/tsk5-1.png" align="middle" width="400px"/>
-          <figcaption align="middle">Level Zero, Nearest Pixel, Sample Rate = 1 per pixel</figcaption>
+          <figcaption align="middle">Cow mesh before edge splits.</figcaption>
         </td>
         <td>
           <img src="images/tsk5-2.png" align="middle" width="400px"/>
-          <figcaption align="middle">Level Zero, Nearest Pixel, Sample Rate = 16 per pixel</figcaption>
+          <figcaption align="middle">Cow mesh with edge splits.</figcaption>
         </td>
-
       </tr>
 
       <tr>
         <td>
-          <img src="images/tsk5-4.png" align="middle" width="400px"/>
-          <figcaption align="middle">Level Zero, Bilinear Pixel, Sample Rate = 1 per pixel</figcaption>
+          <img src="images/tsk5-3.png" align="middle" width="400px"/>
+          <figcaption align="middle">Cube before edge splits and edge flips.</figcaption>
         </td>
         <td>
-          <img src="images/tsk5-3.png" align="middle" width="400px"/>
-          <figcaption align="middle">Level Zero, Bilinear Pixel, Sample Rate = 16 per pixel</figcaption>
+          <img src="images/tsk5-4.png" align="middle" width="400px"/>
+          <figcaption align="middle">Cube with edge splits and edge flips.</figcaption>
         </td>
       </tr>
     </table>
   </div>
 
-  <p>
-	Screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter 't' shown below.
-  </p>
-
-
-
 <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
-  <h1>Level Sampling</h1>
-  <p>
-    Level sampling is where we perform a computation to determine the resolution, or mipmap level, for a particular pixel. Each pixel will be mapped to a texel with varying resolutions. To determine what texture resolution should be mapped to each pixel, we computed the texture gradient derivatives to indicate whether there is a large change in frequency. If so, we would need to provide a higher mipmap level so that we can render a lower resolution texture. If the gradients are low, we can choose a lower mipmap level (higher-resolution texture) accordingly. To implement level sampling, we first computed the uv barycentric coordinates of (x, y), (x+1, y), and (x, y+1).
-    In the function, rasterize_textured_triangle, we set the sample parameters and set the sampled texture color to our texture buffer. 
-	In our sample function for texture, we calculated the difference between the vectors to get the correct mipmap level and scaled the difference vectors accordingly. 
-	We also took into account the varying combinations we could have in regards to our level sample method and pixel sample method. 
-	<br><br>As seen in the images below, performing bilinear pixel interpolation while using level zero and nearest level provides a smoother overall texture than nearest pixel sampling. The difference is clearest when we use level zero and nearest pixel sampling. In that image, the edges remain relatively jagged and not as smoothly blended.
-	</p>
-
-	<p>
-		Level zero sampling had the same speed as pixel sampling. 
-		For sampling at the nearest level and bilinear level interpolation, we had to get the uv barycentric coordinates, and calculate and round the continuous mipmap level with the Jacobian. 
-		In addition, for bilinear level interpolation, depending on whether we sampled bilinearly or sampled nearest, we sampled both at the nearest mipmap level D and D+1, then performed interpolation with distance that depended on how far they were from the continuous D value. As we increase the mipmap level, the pixel-by-pixel size decreases. 
-	</p>
-
-	<p>
-		Bilinear level interpolation has the greatest performance when it comes to antialiasing because we are determining mipmap levels for a particular pixel. 
-		We are using high-resolution mipmaps for objects that are closer to us and lower-resolution mipmaps for objects that are more distant. 
-		We can simulate perspective for textures using mip maps. 
-		Therefore, we are getting high quality rendered textures.
-	</p>
-	
-	<h1>Pixel Sampling</h1>
-	<p>
-	Nearest pixel sampling was faster than bilinear pixel sampling since sampling nearest only involved scaling the uv texture coordinates with the mipmap and determining the location whereas bilinear filtering involved performing 4 texel reads and 3 linear interpolations. 
-	Both nearest and bilinear filtering used the same amount of memory since there was no dynamic resizing of memory for any of the maps. 
-	Bilinear filtering has better performance when it comes to antialiasing since it samples the 4 nearest locations for the texture values, giving smoother texture values rather than discrete and jagged images. 
-	</p>
-
-	<h1>Supersampling</h1>
-	<p>
-	For supersampling, the speed of our implementation is quite slow because we need to sample numerous points, average these points across every sample, and get the appropriate sample point back. 
-	We are essentially sampling at a higher-resolution  and then sampling back down. 
-	So, rendering at n samples per pixel would require us to render our image n times the resolution. 
-	Therefore, the speed is linear to the samples per pixel. 
-	Supersampling with a higher sample rate results in higher memory usage since we need to dynamically allocate more memory for the NxN subpixels per every pixel. 
-	In comparison, single pixels don’t need extra memory. 
-	Supersampling is quite effective in anti-aliasing. 
-	Though expensive, we see a visible difference when sampling at sample rates 4, and especially 16.
-	</p>
-  <div align="middle">
+  <p>To implement loop division, we first iterated through each original point in the mesh and marked each original vertex as old. 
+    Then, for each old vertex, we evaluated their new positions and stored them inside the newPosition vertex. 
+    In order to evaluate the new positions, we got the neighbors of each vertex, their degree, and their respective weight according to the rule 3/(8 * degree of vertex) except when the degree is three, then  the weight would equal 3/16. 
+    Next, we iterated through each edge in the mesh, got the edge's neighboring faces, and the neighboring faces' half-edges to evaluate their vertex positions. 
+    We then utilized these two vertex positions to get two more vertex positions (mirrored to the previous two),  weighted them accordingly, and evaluated the updated vertex positions. 
+    Next, we split every edge in the mesh that is not an original edge and flipped the new edges that connect an old and new vertex.
+    Finally, we iterated through each vertex to copy their new vertex positions into the final position vertex.
+    </p>
+  <!-- <div align="middle">
     <table style="width=100%">
       <tr>
         <td>
           <img src="images/tsk6-1.png" align="middle" width="400px"/>
-          <figcaption align="middle">L_ZERO, P_NEAREST</figcaption>
+          <figcaption align="middle"></figcaption>
         </td>
         <td>
           <img src="images/tsk6-2.png" align="middle" width="400px"/>
-          <figcaption align="middle">L_ZERO,P_LINEAR</figcaption>
+          <figcaption align="middle"></figcaption>
         </td>
       </tr>
       <br>
       <tr>
         <td>
           <img src="images/tsk6-3.png" align="middle" width="400px"/>
-          <figcaption align="middle">L_NEAREST,P_NEAREST</figcaption>
+          <figcaption align="middle"></figcaption>
         </td>
         <td>
           <img src="images/tsk6-4.png" align="middle" width="400px"/>
-          <figcaption align="middle">L_NEAREST,P_LINEAR</figcaption>
+          <figcaption align="middle"></figcaption>
         </td>
       </tr>
     </table>
-  </div>
+  </div> -->
 
-<p>Link: <a href="url">https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj1/index.html</a></p>
+<p>Link: <a href="https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj2/index.html">Project 2</a></p>
 </body>
 </html>
