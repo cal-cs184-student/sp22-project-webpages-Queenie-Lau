@@ -227,16 +227,25 @@
 
 <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
   <p>
-    <!--To implement loop division, we first iterated through each original point in the mesh and marked each original vertex as old. 
+    To implement loop division, we first iterated through each original point in the mesh and marked each original vertex as old. 
     Then, for each old vertex, we evaluated their new positions and stored them inside the newPosition vertex. 
     In order to evaluate the new positions, we got the neighbors of each vertex, their degree, and their respective weight according to the rule 3/(8 * degree of vertex) except when the degree is three, then  the weight would equal 3/16. 
     Next, we iterated through each edge in the mesh, got the edge's neighboring faces, and the neighboring faces' half-edges to evaluate their vertex positions. 
-    We then utilized these two vertex positions to get two more vertex positions (mirrored to the previous two),  weighted them accordingly, and evaluated the updated vertex positions. 
+    We then utilized these two vertex positions to get two more vertex positions (mirrored to the previous two), weighted them accordingly, and evaluated the updated vertex positions. 
     Next, we split every edge in the mesh that is not an original edge and flipped the new edges that connect an old and new vertex.
-    Finally, we iterated through each vertex to copy their new vertex positions into the final position vertex. -->
-    To implement loop subdivision
-    </p>
-  <!-- <div align="middle">
+    Finally, we iterated through each vertex to copy their new vertex positions into the final position vertex.
+  </p>
+
+  <p>
+    After loop division, we can see how the cube becomes significantly smoother since we start to lose the sharp corners and edges. 
+    By pre-splitting some edges, we don't see this smoothing effect as much because  we are averaging from a larger set of vertices. 
+    Thus, there's a lot more edges and faces that we would need to subdivide to smoothen out our cube.
+    After several iterations, we see that the cube does become slightly asymmetric after the subdivisions.  
+    The asymmetric cube shape comes from how we are weighing our old vertices and new vertices. 
+    The uneven weighing is what leads to the  asymmetric cube.  
+    So, this is where the pre-splitting and pre-flipping comes into hand.  
+  </p>
+  <div align="middle">
     <table style="width=100%">
       <tr>
         <td>
@@ -259,8 +268,14 @@
           <figcaption align="middle"></figcaption>
         </td>
       </tr>
+      <tr>
+        <td>
+          <img src="images/tsk6-5.png" align="middle" width="400px"/>
+          <figcaption align="middle"></figcaption>
+        </td>
+      </tr>
     </table>
-  </div> -->
+  </div>
 
 <p>Link: <a href="https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj2/index.html">Project 2</a></p>
 </body>
