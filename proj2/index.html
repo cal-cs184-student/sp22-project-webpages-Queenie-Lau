@@ -137,11 +137,15 @@
 
   <p>In order to utilize the de Casteljau algorithm to extend to Bezier surfaces, 
 	  we first created a temporary array of Vector3D elements and initialized it to have 
-	  the same size as controlPoints.size(). 
-	  Then, we looped through each control point and fully evaluated de Casteljau's algorithm 
-	  at that point with scalar parameter u.
-	  Now, we stored the fully evaluated point back into our temporary array of Vector3D elements. 
-	  Finally, we evaluated the set of our temporary Vector3D points at scalar parameter v to evaluate Bezier surfaces along the y-axis. 
+	  size n, given nxn control points and parameters u and v as input. 
+	  Then, for each row of the nxn control points, which consisted of a vector of points,  
+    we fully evaluated de Casteljau's algorithm at that row with the parameter u as the scalar interpolation parameter.
+    To fully evaluate de Casteljau's algorithm for the row, a vector of points, 
+    we recursively evaluated the steps until there was only 1 point in the 
+    intermediate control points array. 
+	  Now, for each row of the nxn control points, we stored the fully evaluated point back into our temporary array of Vector3D elements. 
+	  Finally, we fully evaluated de Casteljau's algorithm for our temporary vector of Vector3D points at scalar parameter v to output the final 
+    interpolated 3D point on the Bezier surface.
   </p>
 
   <div align="middle">
@@ -159,18 +163,29 @@
 <h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
   <p>To implement area-weighted vertex normals, we first started at the half-edge that was associated with the given vertex. 
 	  From that half-edge, we called next() to get the rest of the vertex positions associated with that triangle face. 
-	  Using the vertex positions of the triangle, we found the normal using the cross product[how], and also the area [how]of the triangle to get the weighted normal,and added it to the Vector3D result. 
+	  Using the vertex positions of the triangle, we found the normal using the cross product, and also the area of the triangle to get the weighted normal,and added it to the Vector3D result. I took the cross product between the vector AB and AC, where A,B,and C are the vertices of the triangle. I found the area to be half the euclidian distance fo the cross product. 
 	  Geometrically, the normal for a triangle face is the vector perpendicular to a surface at a given point. In order to get the weighted normals for all the triangle faces associated with the given vertex, we used iteration and called on the half-edges twin which had the given vertex associated with it. We normalized the final Vector3D result to get the resulting area-weighted normal vector.
   </p>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="proj2img/q3teapotshadingwithoutvertexnormal.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot shading without vertex normal</figcaption>
+        </td>
+        <td>
+          <img src="proj2img/q3-1teapotshadingwith.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot shading with vertex normal</figcaption>
+        </td>
+    <tr>  
+    </tr>
+    </table>
+  </div>
 
 <h3 align="middle">Part 4: Edge Flip</h3>
   <p>
-    To implement edge flip operation, we first drew and labeled the edge flip diagram with two triangles to illustrate how the triangles would look before the edge flip operation. 
-	Then, we drew the diagram of how the two triangles would look after the edge flip. 
-	To implement flipEdge, we first updated the pointers of each halfedge to match the finished edge flip diagram. 
-	Similarly, we then updated the pointers for each edge, vertex, and face. 
-	Next, we set the neighbors of each half edge to by indicating the half edge's next, twin, vertex, edge, and face. 
-	Finally, we returned the EdgeIterator, e0.
+    I drew a diagram labeling all my new and old mesh elements including vertices, edges, faces, and half-edges both before and after the edge flip. I initialized every mesh element on the diagram to avoid any confusion with pointers. I updated the vertices, edges, and faces’ half-edges for when the edge was flipped over, then updated all the neighboring elements for all the half-edges. We set the neighbors of each half edge to by indicating the half edge's next, twin, vertex, edge, and face. 
+  Finally, we returned the EdgeIterator, e0.I returned the edge itself if the edge was a boundary and didn’t make any change. 
   </p>
   <div align="middle">
     <table style="width=100%">
@@ -189,14 +204,25 @@
 	<img src="images/tsk4-3.png" align="middle" width="800px"/>
 	<figcaption align="middle">Multiple Edge Flips</figcaption>
   </div>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="proj2img/q4teapotwithoutflip.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot Before Edge Flip</figcaption>
+        </td>
+        <td>
+          <img src="proj2img/q4teapotmultipleflips.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot After Multiple Edge Flips</figcaption>
+        </td>
+    <tr>  
+    </tr>
+    </table>
+  </div>
 
 
 <h3 align="middle">Part 5: Edge Split</h3>
-  <p>To implement the edge split operation, we first enumerated the old mesh's half edge elements. 
-	  Then, we created new half edges, edges, and faces to account for after the edge split. 
-	  We then listed out the  re-used edges and vertices to create a new vertex iterator. 
-	  After, we set the position of our new vertex and updated the pointers for our two faces, updated our vertex half edges, updated our face half edges, and updated our edge half edges. 
-	  Lastly, we set the neighbors of each halfedge and returned the newly created vertex iterator.
+  <p>I drew a diagram labeling all my new and old mesh elements including vertices, edges, faces, and half-edges both before and after the edge split. To avoid confusing and losing track of pointers, I first initialized variables for all my mesh elements. I computed the  middle vertex position for the new vertex created from splitting. I updated the faces, vertices, and edges so that they would point to the correct newly updated half-edges created from the split. Finally, I set the neighbors’ next, face, twin,vertex, edge for all the half-edges. Debugging tricks I used was calling check_for() to check the elements had correct mesh elements pointing to it. I returned a new vertex if the edge was a boundary and didn’t make any change. 
   </p>
 
   <div align="middle">
@@ -224,22 +250,50 @@
       </tr>
     </table>
   </div>
+  <br>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="proj2img/q5teapotsplit0.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot after 0 edge splits</figcaption>
+        </td>
+        <td>
+          <img src="proj2img/q5teapotsplit1.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot after 1 edge splits.</figcaption>
+        </td>
+      </tr>
 
+      <tr>
+        <td>
+          <img src="proj2img/q5teapotsplit2.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot after 2 edge splits.</figcaption>
+        </td>
+        <td>
+          <img src="proj2img/q5teapotsplit3.png" align="middle" width="400px"/>
+          <figcaption align="middle">Teapot after 3 edge splits.</figcaption>
+        </td>
+      </tr>
+    </table>
+  </div>
+ 
 <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
   <p>
-    To implement loop division, we first iterated through each original point in the mesh and marked each original vertex as old. 
-    Then, for each old vertex, we evaluated their new positions and stored them inside the newPosition vertex. 
-    In order to evaluate the new positions, we got the neighbors of each vertex, their degree, and their respective weight according to the rule 3/(8 * degree of vertex) except when the degree is three, then  the weight would equal 3/16. 
-    Next, we iterated through each edge in the mesh, got the edge's neighboring faces, and the neighboring faces' half-edges to evaluate their vertex positions. 
-    We then utilized these two vertex positions to get two more vertex positions (mirrored to the previous two), weighted them accordingly, and evaluated the updated vertex positions. 
-    Next, we split every edge in the mesh that is not an original edge and flipped the new edges that connect an old and new vertex.
-    Finally, we iterated through each vertex to copy their new vertex positions into the final position vertex.
+    To implement loop subdivision, I first iterated through all the vertices in the mesh and for each vertex, I stored the updated new position of the original vertex. I set the boolean isNew to false since we didn’t actually update the original position of the vertex. The updated position of the vertex was ( 1- (vertex degree * constant u))* vertex original position + (constant u * sums of original vertices’ neighbor positions).
+
+ I also iterated through all the edges in the mesh and weighted the vertices of the two triangles with a shared edge and stored it in newPosition, which would be the midpoint for the edge. I set Edge.isNew to false, since later we only flip new edges. After debugging loop errors with edgeSplit, I created a temporary array to store all the edges so we could iterate through them while splitting rather than use the mesh edge iterator,which would have led to iterating through edges while splitting/making new edges.
+
+Next, I split every old edge in the mesh, and marked newly added vertex and edge elements to be true. 
+
+I flipped all edges in the mesh that met the condition of the edge being newly added and being connected to an old and new vertex. Finally, for all the original vertices, I updated the positions to the values that I computed in the first step. I marked all the vertices and edges to be old for the next mesh upsampling. 
+
+I debugged my code by using the cube and other designs, checking the splits, flips, and calculations were implemented correctly. Forgetting to update the stored positions of the vertices shrunk my cube, and I also checked for boundary conditions. 
   </p>
 
   <p>
-    After loop division, we can see how the cube becomes significantly smoother since we start to lose the sharp corners and edges. 
+    After loop division, we can see how the cube and torus becomes significantly smoother since we start to lose the sharp corners and edges. 
     By pre-splitting some edges, we don't see this smoothing effect as much because  we are averaging from a larger set of vertices. 
-    Thus, there's a lot more edges and faces that we would need to subdivide to smoothen out our cube.
+    Thus, there's a lot more edges and faces that we would need to subdivide to smoothen out our cube or torus.
     After several iterations, we see that the cube does become slightly asymmetric after the subdivisions.  
     The asymmetric cube shape comes from how we are weighing our old vertices and new vertices. 
     The uneven weighing is what leads to the  asymmetric cube.  
@@ -250,28 +304,54 @@
       <tr>
         <td>
           <img src="images/tsk6-1.png" align="middle" width="400px"/>
-          <figcaption align="middle"></figcaption>
+          <figcaption align="middle">Cube after 0th loop subdivision</figcaption>
         </td>
         <td>
           <img src="images/tsk6-2.png" align="middle" width="400px"/>
-          <figcaption align="middle"></figcaption>
+          <figcaption align="middle">Cube after first loop subdivision</figcaption>
         </td>
       </tr>
       <br>
       <tr>
         <td>
           <img src="images/tsk6-3.png" align="middle" width="400px"/>
-          <figcaption align="middle"></figcaption>
+          <figcaption align="middle">Cube after second loop subdivision</figcaption>
         </td>
         <td>
           <img src="images/tsk6-4.png" align="middle" width="400px"/>
-          <figcaption align="middle"></figcaption>
+          <figcaption align="middle">Cube after third loop subdivision</figcaption>
         </td>
       </tr>
       <tr>
         <td>
           <img src="images/tsk6-5.png" align="middle" width="400px"/>
-          <figcaption align="middle"></figcaption>
+          <figcaption align="middle">Cube after fourth loop subdivision</figcaption>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="proj2img/q6samp0.png" align="middle" width="400px"/>
+          <figcaption align="middle">Torus after 0th loop subdivision</figcaption>
+        </td>
+        <td>
+          <img src="proj2img/q6samp1.png" align="middle" width="400px"/>
+          <figcaption align="middle">Torus after first loop subdivision</figcaption>
+        </td>
+      </tr>
+      <br>
+      <tr>
+        <td>
+          <img src="proj2img/q6samp2.png" align="middle" width="400px"/>
+          <figcaption align="middle">Torus after second loop subdivision</figcaption>
+        </td>
+        <td>
+          <img src="proj2img/q6sampl4.png" align="middle" width="400px"/>
+          <figcaption align="middle">Torus after fourth loop subdivision</figcaption>
         </td>
       </tr>
     </table>
