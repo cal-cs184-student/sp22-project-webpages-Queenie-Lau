@@ -18,7 +18,7 @@
 <body>
 	<br />
 	<h1 align="middle">Assignment 3: PathTracer</h1>
-	<h2 align="middle">Your Name</h2>
+	<h2 align="middle">Lisa Cheung, Queenie Lau</h2>
 
 	<div class="padded">
 		<p>Use this section to write an overview of the assignment. All of the text in your write-up should be <em>in
@@ -35,12 +35,69 @@
 				page. Just make sure that you include all the components as we've laid them out here. </p>
 
 			<h2 align="middle">Part 1: Ray Generation and Intersection</h2>
-			<p>Describe what you did in Part 1. etc...</p>
+			<p>Walk through the ray generation and primitive intersection parts of the rendering pipeline.</p>
+			<p>To implement ray generation, I first translated the normalized input camera coordinates to camera space
+				coordinates by first translating the input x and y coordinates by -0.5, then scaling with
+				tan(0.5*radians(hFov)) for x and tan(0.5*radians(vFov)) for y and normalizing.
+				I went from the ray in camera space to the ray in world space by using the camera-to-world rotation
+				matrix on camera space coordinates and normalizing it to get the direction vector in world space.
+				I set the origin for the world space ray to the camera position in world space.
+				We used this function for generating camera rays in raytrace_pixel, where we iterated num_samples times
+				and in each iteration, we called a uniform random grid sampler between range [0,1] and added it to x and
+				y.
+				We normalized it by width and height of sampleBuffer. We used est_radiance_global_illuminance then
+				updated the pixel in the sample buffer.
+				We had primitive intersections with triangles and spheres.
+				To test for intersections with the sphere given an input ray, and the min_t and max_t of the ray, I used
+				the discriminant.
+				If the discriminant was equal to zero, then there was an intersection at one point and if it was greater
+				than zero then there was an intersection at two points.
+				Otherwise, there is no intersection. I used the quadratic formula to find the min_t and max_t of the
+				ray, where at^2 + bt + c = 0, a = dot(r.d, r.d), b = dot(2*(r.o - this->o), r.d), and c
+				=dot((r.o-this->o), (r.o - this->o)) - (this->r2).
+				If there was an intersection, I checked that the updated t1 and t2 found with the quadratic equations
+				were within the range of min_t and max_t.
+				If they were I updated the ray’s max_t to be the nearest intersection.
+				Also, I updated the Intersection structure, computing the surface normal which is the normalized point
+				that intersects the sphere at min(t1,t2).
+			</p>
+			<p>
+				Explain the triangle intersection algorithm you implemented in your own words.
+			</p>
+			<p>
+				For the triangle intersection algorithm, I tested to see if the ray intersected with the triangle using
+				the Moller Trumbore algorithm.
+				I checked whether the resulting t was valid and within the range of the ray’s min_t and max_t, and used
+				valid barycentric coordinates for updating the nearest intersection point of the ray and getting the
+				surface normal. I updated the intersection structure.
+
+			</p>
+			<p>
+				Show images with normal shading for a few small .dae files
+			</p>
 			<div align="center">
 				<table style="width=100%">
 					<tr>
 						<td align="middle">
-							<img src="images/example_image.png" width="480px" />
+							<img src="images/image19.png" width="480px" />
+							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image20.png" width="480px" />
+							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image21.png" width="480px" />
 							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
 					</tr>
 				</table>
@@ -52,29 +109,299 @@
 			<p>or, alternatively, you can include an SVG image of a LaTex formula.</p>
 			<p>This time it's your job to copy-paste in the rest of the sections :)</p>
 
+			<h2 align="middle">Part 2:Bounding Volume Hierarchy</h2>
+			<p></p>
+			<p>Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting
+				point.</p>
+			<p>For the BVH construction algorithm, I initiated a BBox and expanded it to include all the primitives from
+				start to end, and computed the average centroid of all the primitives.
+				If the number of primitives was more than max_leaf_size, then we partitioned the left and right
+				iterators depending on if the centroid value was less than the average centroid value.
+
+				I chose the axis that was the most evenly split between the left and right nodes.
+				Then, I recursed on the left and right nodes. If the number of primitives was less than the
+				max_leaf_size, I returned the leaf node.
+			</p>
+			<p>Show images with normal shading for a few large .dae files that you can only render with BVH
+				acceleration.</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image4.png" width="480px" />
+							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image11.png" width="480px" />
+							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>Compare rendering times on a few scenes with moderately complex geometries with and without BVH
+				acceleration. Present your results in a one-paragraph analysis.</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image11.png" width="480px" />
+							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image12.png" width="480px" />
+							<figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>
+				It took 0.0916 seconds to render the cow
+			</p>
+			<h2 align="middle">Part 3:Direct Illumination</h2>
+			<p>
+				Walk through both implementations of the direct lighting function.
+			</p>
+			<p>
+				For direct lighting with uniform hemisphere sampling, I iterated through
+				scene->lights.size()*ns_area_light samples.
+				Since we are doing uniform hemisphere sampling for ray directions, I used the constant 1/(2*PI) as the
+				distribution p(w).
+				In each iteration, I estimated the outgoing light with the reflection equation.In each iteration, I
+				estimated the outgoing light with the reflection equation.
+				First, I got a sample direction from the hemisphereSampler and used it to get the sample ray with an
+				origin of hit_p.
+				I used world space for the ray’s direction.
+				If there was an intersection with the sample ray, I solved for the reflection equation using the
+				estimator.
+				For the estimator, I multiplied together the z-component of the ray’s direction(cos), bsdf, and the
+				luminance, then divided by the distribution p(w).
+				The resulting value was the average of the samples.
+				For direct lighting with importance sampling, I iterated scene->lights times and if it was a delta
+				light(point light source), I only sampled once and if it wasn’t I sampled ns_area_light times.
+				Using sample_L for the light at hit_p I found the emitted radiance, the probability density function
+				value, and sampled direction wi between the light source and p.
+				I then created a ray with origin hit_p and direction wi, and if there was an interaction with the sample
+				ray, I applied the estimator equation.
+				I multiplied together the emitted radiance, bsdf, and cosine, then divided by the probability density
+				function value. I then took the average.
+
+			</p>
+			<p>
+				Show some images rendered with both implementations of the direct lighting function.
+			</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image6.png" width="480px" />
+							<figcaption align="middle">Hemisphere Sampling</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image9.png" width="480px" />
+							<figcaption align="middle">Importance Sampling</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image22.png" width="480px" />
+							<figcaption align="middle">Importance Sampling</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Focus on one particular scene with at least one area light and compare the noise levels in soft shadows
+				when rendering with 1, 4, 16, and 64 light rays (the -l flag) and with 1 sample per pixel (the -s flag)
+				using light sampling, not uniform hemisphere sampling.
+			</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image18.png" width="480px" />
+							<figcaption align="middle">1 light ray</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image2.png" width="480px" />
+							<figcaption align="middle">4 light ray</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image10.png" width="480px" />
+							<figcaption align="middle">16 light ray</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image16.png" width="480px" />
+							<figcaption align="middle">64 light ray</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Compare the results between uniform hemisphere sampling and lighting sampling in a one-paragraph
+				analysis.
+			</p>
+			<h2 align="middle">Part 4:Global Illumination</h2>
+			<p>
+				Walk through your implementation of the indirect lighting function.
+			</p>
+			<p>
+				To implement the at_least_one_bounce_radiance function, I returned one bounce radiance and extra bounces
+				with recursion depending on the Russian Roulette probability and the max_ray_depth. If the max_ray_depth
+				was 0, I only returned zero_bounce and if it was 1 I returned only one bounce. My
+				at_least_one_bounce_radiance function called the one_bounce_radiance function and depending on whether
+				the coin flip with conditional probability of 0.7 was heads or if the ray depth was the max ray depth
+				and greater than one, then I checked whether the ray was intersecting and could recurse. I used the
+				estimator function which involved calling itself multiplied to bsdf and cosine, divided by the
+				probability density function. If it used Russian roulette, I divided by the conditional probability 0.7.
+				I summed up the returning results to get the global illumination.
+			</p>
+			<p>
+				Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
+			</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image1.png" width="480px" />
+							<figcaption align="middle">Global Illumination</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image14.png" width="480px" />
+							<figcaption align="middle">Global Illumination</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Pick one scene and compare rendered views first with only direct illumination, then only indirect
+				illumination. Use 1024 samples per pixel. (You will have to edit
+				PathTracer::at_least_one_bounce_radiance(...) in your code to generate these views.)
+			</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image7.png" width="480px" />
+							<figcaption align="middle">Direct Illumination</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image15.png" width="480px" />
+							<figcaption align="middle">Indirect Illumination</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>
+				To render indirect illumination, I subtracted one_bounce_radiance from the recursive call
+				at_least_one_bounce since indirect illumination doesn’t involved one_bounce or zero_bounce. For direct
+				illumination, I left out the recursive calls at_least_one_bounce and only included one_bounce and
+				zero_bounce.
+			</p>
+			<p>
+				For CBbunny.dae, compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100 (the -m flag). Use
+				1024 samples per pixel.
+			</p>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image13.png" width="480px" />
+							<figcaption align="middle">max_ray_depth=0</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image17.png" width="480px" />
+							<figcaption align="middle">max_ray_depth=1</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image3.png" width="480px" />
+							<figcaption align="middle">max_ray_depth=2</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image1.png" width="480px" />
+							<figcaption align="middle">max_ray_depth=3</figcaption>
+					</tr>
+				</table>
+			</div>
+			<div align="center">
+				<table style="width=100%">
+					<tr>
+						<td align="middle">
+							<img src="images/image8.png" width="480px" />
+							<figcaption align="middle">max_ray_depth=100</figcaption>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2,
+				4, 8, 16, 64, and 1024. Use 4 light rays.
+			</p>
+			<h2 align="middle">Part 5:Adaptive Sampling</h2>
+			<p>
+				Walk through your implementation of adaptive sampling.
+			</p>
+			<p>
+				Pick one scene and render it with at least 2048 samples per pixel. Show a good sampling rate image with
+				clearly visible differences in sampling rate over various regions and pixels. Include both your sample
+				rate image, which shows your how your adaptive sampling changes depending on which part of the image you
+				are rendering, and your noise-free rendered result. Use 1 sample per light and at least 5 for max ray
+				depth.
+			</p>
 
 
-			<h2 align="middle">A Few Notes On Webpages</h2>
-			<p>Here are a few problems students have encountered in the past. You will probably encounter these problems
-				at some point, so don't wait until right before the deadline to check that everything is working. Test
-				your website on the instructional machines early!</p>
-			<ul>
-				<li>Your main report page should be called index.html.</li>
-				<li>Be sure to include and turn in all of the other files (such as images) that are linked in your
-					report!</li>
-				<li>Use only <em>relative</em> paths to files, such as
-					<pre>"./images/image.jpg"</pre>
-					Do <em>NOT</em> use absolute paths, such as
-					<pre>"/Users/student/Desktop/image.jpg"</pre>
-				</li>
-				<li>Pay close attention to your filename extensions. Remember that on UNIX systems (such as the
-					instructional machines), capitalization matters.
-					<pre>.png != .jpeg != .jpg != .JPG</pre>
-				<li>Be sure to adjust the permissions on your files so that they are world readable. For more
-					information on this please see this tutorial: <a
-						href="http://www.grymoire.com/Unix/Permissions.html">http://www.grymoire.com/Unix/Permissions.html</a>
-				</li>
-				<li>And again, test your website on the instructional machines early!</li>
+
+
 	</div>
 </body>
 
