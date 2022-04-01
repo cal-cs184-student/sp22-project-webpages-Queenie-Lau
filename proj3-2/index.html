@@ -1,34 +1,59 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
 <head>
-<style>  
-    div.padded {  
-      padding-top: 0px;  
-      padding-right: 100px;  
-      padding-bottom: 0.25in;  
-      padding-left: 100px;  
-    }  
-  </style> 
-<title>Lisa Cheung, Queenie Lau |  CS 184</title>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+    <style>
+        div.padded {
+            padding-top: 0px;
+            padding-right: 100px;
+            padding-bottom: 0.25in;
+            padding-left: 100px;
+        }
+    </style>
+    <title>Lisa Cheung, Queenie Lau | CS 184</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
 </head>
+
 <body>
-<br />
-<h1 align="middle">Assignment 3-2: PathTracer</h1>
+    <br />
+    <h1 align="middle">Assignment 3-2: PathTracer</h1>
     <h2 align="middle">Lisa Cheung, Queenie Lau</h2>
 
     <div class="padded">
         <p>Overview </p>
+        <p>In the second part of our raytracer project, we implemented algorithms to further allow us to render
+            realistic materials. </p>
+        <p> In particular, we implemented the ability to render mirror and glass materials (part 1) and microfacet
+            materials (part 2). </p>
 
-    <h2 align="middle">Part 1: Mirror and Glass Materials</h2>
-        <p>Show a sequence of six images of scene CBspheres.dae rendered with max_ray_depth set to 0, 1, 2, 3, 4, 5, and 100. The other settings should be at least 64 samples per pixel and 4 samples per light.</p>
+        <h2 align="middle">Part 1: Mirror and Glass Materials</h2>
+        <p>
+            To render mirror and glass materials, we implemented algorithms to support reflection and refraction.
+            In the reflect function, we implemented reflection about the normal (0, 0, 1) and stored it in the incident
+            vector, wi.
+            We created the normal vector and performed a linear transformation on wi.
+            Then, we implemented the sample_f function which utilized our reflect function.
+            We first set the pdf to one since this is a special case of the PathTracer lighting estimate.
+            Then, we reflected the incident and outgoing vectors.
+            Finally, we returned
+        <pre align="middle">reflectance / abs_cos_theta(*wi)</pre> as noted in the spec to cancel out the cosine of our
+        at_least_one_bounce_radiance function.
+        At this point, we are able to mirror materials in our scene.
+        Next, we implemented refraction using Snell's Law so that when we render glass, we can see the slight
+        deformation through the object.
+        We first checked whether or not there is total internal reflection.
+        If there isn't, we computed Schlick's reflection coefficient, R, and checked if we should reflect or refract.
+        Finally, we are able to render realistic mirror and glass models with reflection and refraction.
+        </p>
+        <p>Show a sequence of six images of scene CBspheres.dae rendered with max_ray_depth set to 0, 1, 2, 3, 4, 5, and
+            100. The other settings should be at least 64 samples per pixel and 4 samples per light.</p>
         <div align="center">
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm0.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 0</figcaption>
+                        <img src="images/pt1_CBspheresm0.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 0</figcaption>
                 </tr>
             </table>
         </div>
@@ -36,8 +61,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm1.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 1</figcaption>
+                        <img src="images/pt1_CBspheresm1.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 1</figcaption>
                 </tr>
             </table>
         </div>
@@ -45,8 +70,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm2.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 2</figcaption>
+                        <img src="images/pt1_CBspheresm2.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 2</figcaption>
                 </tr>
             </table>
         </div>
@@ -54,8 +79,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm3.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 3</figcaption>
+                        <img src="images/pt1_CBspheresm3.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 3</figcaption>
                 </tr>
             </table>
         </div>
@@ -63,8 +88,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm4.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 4</figcaption>
+                        <img src="images/pt1_CBspheresm4.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 4</figcaption>
                 </tr>
             </table>
         </div>
@@ -72,8 +97,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm5.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 5</figcaption>
+                        <img src="images/pt1_CBspheresm5.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 5</figcaption>
                 </tr>
             </table>
         </div>
@@ -81,22 +106,81 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt1_CBspheresm100.png" width="480px" />
-                    <figcaption align="middle">max_ray_depth = 100</figcaption>
+                        <img src="images/pt1_CBspheresm100.png" width="480px" />
+                        <figcaption align="middle">max_ray_depth = 100</figcaption>
                 </tr>
             </table>
         </div>
         <p>Point out the new multibounce effects that appear in each image.</p>
         <p>Explain how these bounce numbers relate to the particular effects that appear.</p>
+        <p>
+            When the max ray depth is set to 0,we observe the source light on the top while everything else is black.
+            There is only illumination from the light source.
+            This is because there are zero bounces of light that bounces off the scene.
+
+
+            When the max ray depth is set to 1, one bounce of light bounces off from the spheres and toward the camera,
+            resulting in a scene with direct lighting from reflection and mostly black spheres.
+            One bounces results in no mirroring from the spheres, direct lighting from reflection, and one bounce
+            reflecting off of the sphere.
+
+            When the max ray depth is set to 2, we notice that there is reflection rendered but not refraction, with the
+            left sphere mirroring the other sphere and walls in the scene. However the right sphere remains mostly black
+            like in one bounce. This is because max ray depth of 2, reflection but not refraction occurs. There remains
+            direct lighting from reflection and one bounce of light bouncing off the sphere. The right sphere mirrored
+            onto the left sphere looks black.
+
+
+            When the max ray depth is set to 3, it is similar to max ray depth of 2 except the right sphere looks less
+            opaque. This is because increasing the number of bounces increases the effects of the refractive component.
+            However, the right sphere mirrored onto the left sphere still looks black.
+
+            When the max ray depth is set to 4, we notice that increasing the max ray depth makes the right sphere even
+            less of the dark opaque color and now the right sphere mirrored
+            onto the left sphere is not black. Instead, it looks blue because of the blue wall color reflected onto the
+            right sphere. In addition, we notice that there is a bounce of light from the right sphere reflected off
+            onto the blue wall.
+            Increasing the number of bounces increases the effect of refraction, making the right sphere look more
+            transparant and lit up.
+            When the max ray depth is set to 5, it is similar to the multibounce effects from a max ray depth of 4, with
+            the right sphere now looking even more transparent and less opaque.
+            When the max ray depth is set to 100, the scene now looks like the right sphere is purely refractive.
+            Increasing the number of bounces makes it more and more similar to being purely refractive for the front
+            sphere.
+        </p>
 
         <h2 align="middle">Part 2: Microfacet Material</h2>
-        <p>Show a sequence of 4 images of scene CBdragon_microfacet_au.dae rendered with α set to 0.005, 0.05, 0.25 and 0.5. The other settings should be at least 128 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Describe the differences between different images.</p>
-         <div align="center">
+        <p>To render microfacet materials, we first implemented the BRDF evaluation model using the Fresnel term (F),
+            shadowing-mask term (G), and the normal distribution function (NDF).
+            We followed the formula given in the spec:
+        <pre align="middle">f = F(wi) * G(w0, wi) * D(h) / 4 * (n * w0) * (n * wi). </pre> Then, we implemented the
+        Normal Distribution Function (NDF) which allows us to calculate the microfacets' normals.
+        By using the Beckmann distribution noted in the project spec, we utilized the macro surface's roughness, and the
+        angle between the half vector and the macro surface normal n.
+        Next, we implemented the air-conductor Fresnel Term which is necessary for our BRDF evaluation model.
+        In particular, we implemented the simplified Fresnel term using just the red, green, and blue color channels.
+        We approximated the Fresnel term using the approximation,
+        <pre align="middle">F = (Rs + Rp) / 2</pre>
+        <pre
+            align="middle">Rs ​= ​(η^2 ​+ k^2) - 2ηcos(θ​i) + cos(​θi)^2 / ​​(η2 ​+ k​^2) + 2ηcos(θ​i) ​+ cos(θ​i)^2</pre>
+        <pre
+            align="middle">Rp ​= ​(η^2 ​+ k^2)cos(​θi)^2 - 2ηcos(θ​i) + 1 / ​​(η2 ​+ k​^2)cos(θ​i)^2 + 2ηcos(θ​i) ​+ 1</pre>
+        , noted in the spec.
+        Finally, we implemented importance sampling to reduce the noise of our surfaces.
+        We utilized the Beckmann NDF noted in the spec to get a suffice p theta and p phi.
+        Therefore, the better pairs we get akin to the Beckmann distribution, the less noise we will get on our
+        surfaces.
+        After, we sampled theta h and phi h so that we can get the microfacet normal, h, and its pdfs.
+        </p>
+        <p>Show a sequence of 4 images of scene CBdragon_microfacet_au.dae rendered with α set to 0.005, 0.05, 0.25 and
+            0.5. The other settings should be at least 128 samples per pixel and 1 samples per light. The number of
+            bounces should be at least 5. Describe the differences between different images.</p>
+        <div align="center">
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBdragon_microfacet_au_alpha0.005_writeup.png" width="480px" />
-                    <figcaption align="middle">alpha = 0.005</figcaption>
+                        <img src="images/pt2_CBdragon_microfacet_au_alpha0.005_writeup.png" width="480px" />
+                        <figcaption align="middle">alpha = 0.005</figcaption>
                 </tr>
             </table>
         </div>
@@ -104,8 +188,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBdragon_microfacet_au_alpha0.05_writeup.png" width="480px" />
-                    <figcaption align="middle">alpha = 0.05</figcaption>
+                        <img src="images/pt2_CBdragon_microfacet_au_alpha0.05_writeup.png" width="480px" />
+                        <figcaption align="middle">alpha = 0.05</figcaption>
                 </tr>
             </table>
         </div>
@@ -113,8 +197,8 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBdragon_microfacet_au_alpha0.25_writeup.png" width="480px" />
-                    <figcaption align="middle">alpha = 0.25</figcaption>
+                        <img src="images/pt2_CBdragon_microfacet_au_alpha0.25_writeup.png" width="480px" />
+                        <figcaption align="middle">alpha = 0.25</figcaption>
                 </tr>
             </table>
         </div>
@@ -122,18 +206,29 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBdragon_microfacet_au_alpha0.5_writeup.png" width="480px" />
-                    <figcaption align="middle">alpha = 0.5</figcaption>
+                        <img src="images/pt2_CBdragon_microfacet_au_alpha0.5_writeup.png" width="480px" />
+                        <figcaption align="middle">alpha = 0.5</figcaption>
                 </tr>
             </table>
         </div>
-        <p>Show two images of scene CBbunny_microfacet_cu.dae rendered using cosine hemisphere sampling (default) and your importance sampling. The sampling rate should be fixed at 64 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Briefly discuss their difference.</p>
-         <div align="center">
+        <p>When alpha is set to 0.005, we see that the dragon's surface is a bit grainy and rough.
+            The shadows on the dragon are a bit harsh and the highlights are unclear.
+            Now, by increasing the alpha value to 0.05, we see that the dragon is much brigter and the surface is a bit
+            smoother.
+            The shadows have softened up a bit around the neck and the dragon looks significantly more realistic.
+            At alpha value 0.25, we don't see a drastic difference, but the dragon's highlights are a bit brighter.
+            Finally, with alpha value 0.5, the dragon's neck and body shadows look lighter, more realistic, and
+            seamlessly blended into the surface.
+        </p>
+        <p>Show two images of scene CBbunny_microfacet_cu.dae rendered using cosine hemisphere sampling (default) and
+            your importance sampling. The sampling rate should be fixed at 64 samples per pixel and 1 samples per light.
+            The number of bounces should be at least 5. Briefly discuss their difference.</p>
+        <div align="center">
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBbunny_hemisphere_sampl_writeup.png" width="480px" />
-                    <figcaption align="middle">Hemiphsphere Sampling</figcaption>
+                        <img src="images/pt2_CBbunny_hemisphere_sampl_writeup.png" width="480px" />
+                        <figcaption align="middle">Hemiphsphere Sampling</figcaption>
                 </tr>
             </table>
         </div>
@@ -141,37 +236,54 @@
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBbunnyemicrofacet_cu_importancesampling.png" width="480px" />
-                    <figcaption align="middle">Importance Sampling</figcaption>
+                        <img src="images/pt2_CBbunnyemicrofacet_cu_importancesampling.png" width="480px" />
+                        <figcaption align="middle">Importance Sampling</figcaption>
                 </tr>
             </table>
         </div>
-        <p>Show at least one image with some other conductor material, replacing eta and k. Note that you should look up values for real data rather than modifying them arbitrarily. Tell us what kind of material your parameters correspond to</p>
-         <div align="center">
-            <table style="width=100%">
-                <tr>
-                    <td align="middle">
-                    <img src="images/pt2_CBbunny_mercury_writeup.png" width="480px" />
-                    <figcaption align="middle">Mercury</figcaption>
-                </tr>
-            </table>
-        </div>
+        <p>Using hemisphere sampling, we see that the bunny is way more speckled and grainy looking than when we use
+            importance sampling.
+            Importance sampling provides us with a much smoother, realistic looking surface.
+            Hemisphere sampling also makes it hard to distinguish where the shadows and highlights of the bunny should
+            be.
+            With importance sampling, it is clear where the highlights and shadows are so that we can make out the bunny
+            shape. This is because there are more noise levels when using hemisphere sampling, which samples from the
+            hemisphere uniformly. Importance sampling, on the other hand, gives better results since we sample from pdfs
+            that better resemble the normal distribution function for the bsdf. </p>
+        <p>Show at least one image with some other conductor material, replacing eta and k. Note that you should look up
+            values for real data rather than modifying them arbitrarily. Tell us what kind of material your parameters
+            correspond to.</p>
         <div align="center">
             <table style="width=100%">
                 <tr>
                     <td align="middle">
-                    <img src="images/pt2_CBbunny_cobalt_writeup.png" width="480px" />
-                    <figcaption align="middle">Cobalt</figcaption>
+                        <img src="images/pt2_CBbunny_mercury_writeup.png" width="480px" />
+                        <figcaption align="middle">Mercury</figcaption>
                 </tr>
             </table>
         </div>
-       
-        
+        <p>The corresponding eta and k values for red, green, and blue wavelengths are Vector3D(1.8795, 1.5472, 1.1353)
+            and Vector3D(5.1076, 4.6437, 3.9980). The mercury material produces a lighter more silver tint for the bunny
+            compared to the reddish-brown color for the copper bunny.</p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/pt2_CBbunny_cobalt_writeup.png" width="480px" />
+                        <figcaption align="middle">Cobalt</figcaption>
+                </tr>
+            </table>
+        </div>
+        <p>The corresponding eta and k values for red, green, and blue wavelengths are Vector3D(2.1849, 2.0500, 1.7925)
+            and Vector3D(4.0971, 3.8200, 3.3775).</p>
 
-</div>
+
+
+    </div>
+    <p align="center">
+        <a href=https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj3-2/index.html>Webpage found
+            here.</a>
+    </p>
 </body>
+
 </html>
-
-
-
-
