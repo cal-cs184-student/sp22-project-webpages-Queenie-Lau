@@ -1,7 +1,341 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 4 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<style>
+		body {
+			padding: 100px;
+			width: 1000px;
+			margin: auto;
+			text-align: left;
+			font-weight: 300;
+			font-family: 'Open Sans', sans-serif;
+			color: #121212;
+		}
+
+		h1,
+		h2,
+		h3,
+		h4 {
+			font-family: 'Source Sans Pro', sans-serif;
+		}
+	</style>
+	<title>CS 184 Cloth Sim</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+	<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2022</h1>
+	<h1 align="middle">Project 4: Cloth Sim</h1>
+	<h2 align="middle">Lisa Cheung, Queenie Lau</h2>
+
+	<br><br>
+
+	<div>
+
+		<h2 align="middle">Overview</h2>
+		<p>temp
+		</p>
+
+		<h3 align="middle">Part 1: Masses and springs</h3>
+
+		<ul>
+			<li>
+				<p>Take some screenshots of scene/pinned2.json from a viewing angle where you can clearly see the cloth
+					wireframe to show the structure of your point masses and springs.</p>
+			</li>
+		</ul>
+
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/Screenshot (13).png" align="middle" />
+						<figcaption align="middle"></figcaption>
+						<br />
+						<img src="imgs/Screenshot (14).png" align="middle" />
+						<figcaption align="middle"></figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<ul>
+			<li>
+				Show us what the wireframe looks like (1) without any shearing constraints, (2) with only shearing
+				constraints, and (3) with all constraints.
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/withoutshearing.png" align="middle" />
+						<figcaption align="middle">(1) without any shearing constraints</figcaption>
+						<br />
+						<img src="imgs/onlyshearing.png" align="middle" />
+						<figcaption align="middle">(2) with only shearing
+							constraints</figcaption>
+						<br />
+						<img src="imgs/allthree.png" align="middle" />
+						<figcaption align="middle">(3) with all constraints</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+
+
+		<h3 align="middle">Part 2: Simulation via numerical integration</h3>
+
+		<ul>
+			<li>
+				<p>Describe the effects of changing the spring constant ks; how does the cloth behave from start to rest
+					with a very low ks? A high ks?</p>
+			</li>
+			<li>
+				<p>What about for density?</p>
+			</li>
+			<li>
+				<p>What about for damping?</p>
+			</li>
+			<li>
+				<p>For each of the above, observe any noticeable differences in the cloth compared to the default
+					parameters and show us some screenshots of those interesting differences and describe when they
+					occur.</p>
+			</li>
+		</ul>
+
+		<ul>
+			<li>
+				<p>Show us a screenshot of your shaded cloth from scene/pinned4.json in its final resting state! If you
+					choose to use different parameters than the default ones, please list them.</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/pinned2.png" align="middle" />
+						<figcaption align="middle"></figcaption>
+						<br />
+
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<h3 align="middle">Part 3: Handling collisions with other objects</h3>
+		<ul>
+			<li>
+				<p>Show us screenshots of your shaded cloth from scene/sphere.json in its final resting state on the
+					sphere using the default ks = 5000 as well as with ks = 500 and ks = 50000. Describe the differences
+					in the results.</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/ks500.png" align="middle" />
+						<figcaption align="middle"> ks = 500</figcaption>
+						<br />
+						<img src="imgs/ks5000.png" align="middle" />
+						<figcaption align="middle">ks = 5000</figcaption>
+						<br />
+						<img src="imgs/ks50000.png" align="middle" />
+						<figcaption align="middle">ks = 50000</figcaption>
+						<br />
+
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<ul>
+			<li>
+				<p>Show us a screenshot of your shaded cloth lying peacefully at rest on the plane. If you haven't by
+					now, feel free to express your colorful creativity with the cloth! (You will need to complete the
+					shaders portion first to show custom colors.)</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/plane.png" align="middle" />
+						<figcaption align="middle"></figcaption>
+						<br />
+
+
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+
+		<h3 align="middle">Part 4: Handling self-collisions</h3>
+		<ul>
+			<li>
+				<p>Show us at least 3 screenshots that document how your cloth falls and folds on itself, starting with
+					an early, initial self-collision and ending with the cloth at a more restful state (even if it is
+					still slightly bouncy on the ground).</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/ts0.png" align="middle" />
+						<figcaption align="middle">Timestep 0</figcaption>
+						<br />
+						<img src="imgs/ts1.png" align="middle" />
+						<figcaption align="middle">Timestep 1</figcaption>
+						<br />
+						<img src="imgs/ts2.png" align="middle" />
+						<figcaption align="middle">Timestep 2</figcaption>
+						<br />
+						<img src="imgs/ts6.png" align="middle" />
+						<figcaption align="middle">Timestep 3</figcaption>
+						<br />
+
+
+					</td>
+				</tr>
+			</table>
+		</div>
+		<ul>
+			<li>
+				<p>Vary the density as well as ks and describe with words and screenshots how they affect the behavior
+					of the cloth as it falls on itself.</p>
+			</li>
+		</ul>
+
+
+
+		<h3 align="middle">Part 5: Shaders</h3>
+		<ul>
+			<li>
+				<p>Explain in your own words what is a shader program and how vertex and fragment shaders work together
+					to create lighting and material effects.</p>
+			</li>
+		</ul>
+		<ul>
+			<li>
+				<p>Explain the Blinn-Phong shading model in your own words. Show a screenshot of your Blinn-Phong shader
+					outputting only the ambient component, a screen shot only outputting the diffuse component, a screen
+					shot only outputting the specular component, and one using the entire Blinn-Phong model.</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/phongambientonly.png" align="middle" />
+						<figcaption align="middle">only the ambient component</figcaption>
+						<br />
+						<img src="imgs/phongdiffuseonly.png" align="middle" />
+						<figcaption align="middle">only the diffuse component</figcaption>
+						<br />
+						<img src="imgs/phongspecularonly.png" align="middle" />
+						<figcaption align="middle">only the specular component</figcaption>
+						<br />
+						<img src="imgs/phongentire.png" align="middle" />
+						<figcaption align="middle">entire Blinn-Phong model</figcaption>
+						<br />
+
+					</td>
+				</tr>
+			</table>
+		</div>
+		<ul>
+			<li>
+				<p>Show a screenshot of your texture mapping shader using your own custom texture by modifying the
+					textures in /textures/.</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/texture.png" align="middle" />
+						<figcaption align="middle">Texture Mapping</figcaption>
+						<br />
+
+					</td>
+				</tr>
+			</table>
+		</div>
+		<ul>
+			<li>
+				<p>Show a screenshot of bump mapping on the cloth and on the sphere. Use the same texture for both
+					renders. You can either provide your own
+					texture or use one of the ones in the textures directory, BUT choose one that's not the default
+					texture_2.png.</p>
+			</li>
+		</ul>
+
+		<ul>
+			<li>
+				<p>Show a screenshot of displacement
+					mapping on the sphere. Use the same texture for both renders. You can either provide your own
+					texture or use one of the ones in the textures directory, BUT choose one that's not the default
+					texture_2.png.</p>
+			</li>
+		</ul>
+
+		<ul>
+			<li>
+				<p> Compare the two approaches and resulting renders in your own words. </p>
+			</li>
+		</ul>
+
+		<ul>
+			<li>
+				<p> Compare how
+					your
+					the two shaders react to the sphere by changing the sphere mesh's coarseness by using -o
+					16 -a
+					16
+					and then -o 128 -a 128.</p>
+			</li>
+		</ul>
+		<ul>
+			<li>
+				<p>Show a screenshot of your mirror shader on the cloth and on the sphere.</p>
+			</li>
+		</ul>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>
+						<img src="imgs/mirror0.png" align="middle" />
+						<figcaption align="middle">Cloth on Plane</figcaption>
+						<br />
+						<img src="imgs/mirror1.png" align="middle" />
+						<figcaption align="middle">Cloth on Sphere</figcaption>
+						<br />
+						<img src="imgs/mirror2.png" align="middle" />
+						<figcaption align="middle">Sphere and Cloth</figcaption>
+						<br />
+
+
+
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<p>Link: <a
+				href="url">https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj4/index.html</a>
+		</p>
+</body>
+
 </html>
