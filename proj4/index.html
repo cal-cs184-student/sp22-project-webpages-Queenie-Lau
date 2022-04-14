@@ -38,6 +38,7 @@
  
 <h2 align="middle">Part I: Masses and springs</h2>
 <!--- APPROACH --->
+
 <p>
 Our approach for buildGrid() involved calculating the change in the cloth's point masses from one timestep to the next.
 We had used two for loops to push back each point mass into the point mass vector then looped through all of the point masses to
@@ -95,12 +96,7 @@ the previous time step's position in last_position. However, if the point mass w
 To help with spring deformation at each timestep, we implemented 1995 Provot by iterating through each spring and
 modifying the two point masses' positions to ensure that the spring's length does not exceed 10% greater than the spring's
 rest_length. We also checked if the point masses were both pinned and cases where one point mass is pinned and the other isn't.
-</p>
- 
-<h3>Describe the effects of changing the spring constant ks;
- how does the cloth behave from start to rest with a very low ks? A high ks?
-</h3>
- 
+</p> 
  
 <h3>Screenshots detailing varying spring constants (ks)</h3>
 <div align="center">
@@ -155,6 +151,10 @@ rest_length. We also checked if the point masses were both pinned and cases wher
  </table>
 </div>
  
+<h3>Describe the effects of changing the spring constant ks;
+  how does the cloth behave from start to rest with a very low ks? A high ks?
+</h3>
+
 <p>
  As seen above, when we have extremely low damping values such as 50 ks,
  we see that the cloth starts to drape into a narrow, 'v' shape due to our springs quickly expanding.
@@ -188,7 +188,7 @@ rest_length. We also checked if the point masses were both pinned and cases wher
  
     <tr>
      <td align="middle">
-         <figcaption align="middle"><p>15 density (default</p></figcaption>
+         <figcaption align="middle"><p>15 density (default)</p></figcaption>
          <img src="imgs/pt2_15d.png" width="480px">
      </td>
   </tr>
@@ -294,16 +294,57 @@ rest_length. We also checked if the point masses were both pinned and cases wher
 </p>
  
 <h3>Screenshot of shaded cloth from scene/pinned4.json</h3>
-<p>ADD IMAGE HERE </p>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">1 density</figcaption>
+              <img src="imgs/pinned4.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
 <h2 align="middle">Part III: Handling collisions with other objects</h2>
  
 <h3>Screenshots of shaded cloth from scene/sphere.json in its final resting state on the sphere.
 </h3>
- 
-<p>ks = 500 (add img)</p>
-<p>Default ks = 5000 (add img)</p>
-<p>ks = 50000 (add img)</p>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">500 ks</figcaption>
+              <img src="imgs/ks500.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">5000 ks (default)</figcaption>
+              <img src="imgs/ks500.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">50000 ks</figcaption>
+              <img src="imgs/ks50000.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+
  <h3>Describe the differences in the results.</h3>
 <p>At ks = 500, we see that the cloth drapes and hangs smoothly over the shaded sphere.
  The pleated wrinkles are relatively uniform and the overall shape is an oval.
@@ -315,21 +356,100 @@ rest_length. We also checked if the point masses were both pinned and cases wher
 <h3>Screenshot of shaded cloth lying peacefully at rest on the plane.
 </h3>
  
-<p>Add screenshot.</p>
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Cloth on Plane</figcaption>
+              <img src="imgs/plane.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
 <h2 align="middle">Part IV: Handling self-collisions</h2>
  
 <h3>Screenshots of how the cloth falls and folds on itself.</h3>
- 
-<p>Early, initial self-collision</p>
- 
-<img>
- 
-<p>Middle of falling</p>
-<img>
- 
-<p>Restful state</p>
-<img>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 0</figcaption>
+              <img src="imgs/ts0.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 1</figcaption>
+              <img src="imgs/ts1.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 2</figcaption>
+              <img src="imgs/ts2.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 3</figcaption>
+              <img src="imgs/ts3.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 4</figcaption>
+              <img src="imgs/ts4.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 5</figcaption>
+              <img src="imgs/ts5.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Timestep 6</figcaption>
+              <img src="imgs/ts6.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
  
 <h3>
  Vary the density as well as ks and describe with words and
@@ -356,55 +476,175 @@ rest_length. We also checked if the point masses were both pinned and cases wher
 <h3>
  Explain the Blinn-Phong shading model in your own words
 </h3>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Only the ambient component</figcaption>
+              <img src="imgs/phongambientonly.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Only the diffuse component</figcaption>
+              <img src="imgs/phongdiffuseonly.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
-<h3>
- Screenshot of Blinn-Phong shader outputting only the ambient component.
-</h3>
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Only the specular component</figcaption>
+              <img src="imgs/phongspecularonly.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
-<h3>
- Screenshot of Blinn-Phong shader only outputting the diffuse component.
-</h3>
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Entire Blinn-Phong model.</figcaption>
+              <img src="imgs/phongentire.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Custom Texture Mapping</figcaption>
+              <img src="imgs/texture.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
-<h3>
- Screenshot of Blinn-Phong shader only outputting the specular component.
-</h3>
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Bump Mapping on Cloth</figcaption>
+              <img src="imgs/bumpcloth.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
-<h3>
- Screenshot of using entire Blinn-Phong model.
-</h3>
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Bump Mapping on Sphere</figcaption>
+              <img src="imgs/bump.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
-<h3>
- Screenshot of texture mapping shader using [INSERT CUSTOM TEXTURE NAME] (download off internet).
-</h3>
+ <div align="center">
+   <table style="width=100%">
+       <tr>
+           <td align="middle">
+              <figcaption align="middle">Bump Mapping on Sphere and Cloth</figcaption>
+               <img src="imgs/bump1.png" width="480px">    
+           </td>
+       </tr>
+   </table>
+ </div>
  
-<h3>
- Screenshot of bump mapping on the cloth.
-</h3>
- 
-<h3>
- Screenshot of bump mapping on the sphere.
-</h3>
- 
-<h3>
- Screenshot of displacement mapping on the sphere.
-</h3>
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Displacement mapping on sphere</figcaption>
+              <img src="imgs/displacementsphere.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Dsplacement mapping on cloth</figcaption>
+              <img src="imgs/displacementcloth0.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Displacement mapping on sphere and cloth</figcaption>
+              <img src="imgs/displacementsphere0.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
  
 <p>
  Use the same texture for both renders.
  You can either provide your own texture or use one of the ones in the textures directory, BUT choose one that's not the default texture_2.png.
  Compare the two approaches and resulting renders in your own words.
  Compare how your the two shaders react to the sphere by changing the sphere mesh's coarseness by using -o 16 -a 16 and then -o 128 -a 128.
- 
 </p>
  
 <h3>
- Screenshot of mirror shader on the cloth.
+ Screenshots of mirror shader on the cloth.
 </h3>
- 
- 
-<h3>
- Screenshot of mirror shader on the sphere.
-</h3>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Mirror shadder on the plane.</figcaption>
+              <img src="imgs/mirror0.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Mirror shader on the sphere.</figcaption>
+              <img src="imgs/mirror1.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<div align="center">
+  <table style="width=100%">
+      <tr>
+          <td align="middle">
+             <figcaption align="middle">Mirror shader on sphere and cloth</figcaption>
+              <img src="imgs/mirror2.png" width="480px">    
+          </td>
+      </tr>
+  </table>
+</div>
+
+<p>Website: </p>
+<a href="url">https://cal-cs184-student.github.io/sp22-project-webpages-Queenie-Lau/proj4/index.html</a>
  
 </body>
 </html>
